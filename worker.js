@@ -24,7 +24,7 @@ export default {
             let content = await env.GlobalStorage.get("stories");
             content = content ? content : [];
 
-            return new Response(JSON.stringify(content), {status: 200, headers: corsHeaders});
+            return new Response(content, {status: 200, headers: corsHeaders});
         }
 
 
