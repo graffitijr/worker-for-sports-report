@@ -14,6 +14,12 @@ export default {
             "Access-Control-Allow-Headers": "Content-Type"
         };
 
+        async function GenerateStoreReturnToken(user){
+            let token = Math.random().toString(36).substring(10);
+            await env.GlobalStorage.set(`token=${token}`, user)
+            return token;
+        }
+
         // Handle browser preflight for POSTs
         if (request.method === "OPTIONS") {
             return new Response(null, {status: 204, headers: corsHeaders});
@@ -36,8 +42,23 @@ export default {
             [username, password] = request.body.json();
 
             if (CorrectAccounts.username === password) {
-                //return new Response("login Success", {status: 200, headers: ...corsHeaders, "Set-Cookie: token="});
+                let token = await GenerateStoreReturnToken(username, password);
+
+                return new Response("login success", {
+                    headers: {
+                        "Set-Cookie": "${token}; HttpOnly; Secure; SameSite=None; Path=/",
+                        ...corsHeaders,
+                    }
+                });
             }
+            return new Response("invalid login", {status: 404, headers: corsHeaders});
+        }
+
+        if (url.pathname === "/post-story" && request.method === "POST") {
+            let text = request.body.json();
+            let token = request.headers.get("Cookie")
+
+            let Correct
         }
 
 
