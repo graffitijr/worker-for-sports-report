@@ -16,7 +16,7 @@ export default {
 
         async function GenerateStoreReturnToken(user){
             let token = Math.random().toString(36).substring(10);
-            await env.GlobalStorage.set(`token_${token}`, user)
+            await env.GlobalStorage.put(`token_${token}`, user)
             return token;
         }
 
@@ -67,7 +67,7 @@ export default {
                 OldStories = OldStories ? OldStories : [];
                 OldStories.unshift(text);
 
-                await env.GlobalStorage.set("stories", OldStories);
+                await env.GlobalStorage.put("stories", OldStories);
 
                 return new Response("successfully added", {status: 200, headers: corsHeaders});
             }
