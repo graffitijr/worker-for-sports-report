@@ -16,7 +16,7 @@ export default {
 
         async function GenerateStoreReturnToken(user){
             let token = Math.random().toString(36).substring(10);
-            await env.GlobalStorage.set(`token=${token}`, user)
+            await env.GlobalStorage.set(`token_${token}`, user)
             return token;
         }
 
@@ -39,14 +39,14 @@ export default {
         }
 
         if (url.pathname === "/login" && request.method === "POST") {
-            [username, password] = request.body.json();
+            [username, password] = await request.json();
 
-            if (CorrectAccounts.username === password) {
+            if (CorrectAccounts[username] === password) {
                 let token = await GenerateStoreReturnToken(username, password);
 
                 return new Response("login success", {
                     headers: {
-                        "Set-Cookie": "${token}; HttpOnly; Secure; SameSite=None;",
+                        "Set-Cookie": `session=${token}; Path=/; HttpOnly; Secure; SameSite=None;`,
                         ...corsHeaders,
                     }
                 });
@@ -55,8 +55,10 @@ export default {
         }
 
         if (url.pathname === "/post-story" && request.method === "POST") {
-            let [name, text] = request.body.json();
-            let token = request.headers.get("Cookie")
+            let [name, text] = await request.json();
+            const cookieHeader = request.headers.get("Cookie") || "";
+            const match = cookieHeader.match(/session=([^;]+)/);
+            const token = match ? match[1] : null;
 
             let CorrectUser = await env.GlobalStorage.get(`token_${token}`)
 
@@ -65,7 +67,7 @@ export default {
                 OldStories = OldStories ? OldStories : [];
                 OldStories.unshift(text);
 
-                await env.GlobalStorage.set(OldStories)
+                await env.GlobalStorage.set("stories", OldStories);
 
                 return new Response("successfully added", {status: 200, headers: corsHeaders});
             }
