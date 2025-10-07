@@ -88,13 +88,17 @@ export default {
             let Stories = await env.GlobalStorage.get("stories");
             Stories = JSON.parse(Stories || "[]");
 
+            let newStories;
+
             if(CorrectUser === name) {
                 for (const story of Stories) {
-                    if (story.title === storyRequest) {
-                        await env.GlobalStorage.delete(story.title)
-                        return new Response("successfully removed", {status: 200, headers: corsHeaders});
+                    if (story.title !== storyRequest) {
+                        newStories.push(story);
                     }
+
                 }
+                await env.GlobalStorage.put("stories", newStories)
+                return new Response("attempted to remove", {status: 200, headers: corsHeaders});
             }
             return new Response("Error, no such story", {status: 404, headers: corsHeaders});
         }
