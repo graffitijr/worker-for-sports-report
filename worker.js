@@ -15,7 +15,7 @@ export default {
         };
 
         async function GenerateStoreReturnToken(user){
-            let token = Math.random().toString(36).substring(10);
+            let token = Math.random().toString(36).substring(5);
             await env.GlobalStorage.put(`token_${token}`, user)
             return token;
         }
@@ -71,7 +71,7 @@ export default {
 
                 return new Response("successfully added", {status: 200, headers: corsHeaders});
             }
-            return new Response("invalid login", {status: 404, headers: corsHeaders});
+            return new Response("not logged in", {status: 404, headers: corsHeaders});
         }
 
 
