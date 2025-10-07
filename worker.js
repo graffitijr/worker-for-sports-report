@@ -95,6 +95,7 @@ export default {
                     }
                 }
             }
+            return new Response("Error, no such story", {status: 404, headers: corsHeaders});
         }
 
 
