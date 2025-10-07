@@ -76,6 +76,27 @@ export default {
             return new Response("not logged in", {status: 404, headers: corsHeaders});
         }
 
+        if (url.pathname === "/remove-story" && request.method === "POST") {
+            let [name, storyRequest] = await request.json();
+
+            const cookieHeader = request.headers.get("Cookie") || "";
+            const match = cookieHeader.match(/session=([^;]+)/);
+            const token = match ? match[1] : null;
+
+            let CorrectUser = await env.GlobalStorage.get(`token_${token}`)
+
+            let Stories = await env.GlobalStorage.get("stories")
+
+            if(CorrectUser === name) {
+                for (const story of Stories) {
+                    if (story.name === storyRequest) {
+                        await env.GlobalStorage.delete(story.name)
+                        return new Response("successfully removed", {status: 200, headers: corsHeaders});
+                    }
+                }
+            }
+        }
+
 
         // Default response for any other route
         return new Response("Not found", {status: 404, headers: corsHeaders});
