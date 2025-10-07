@@ -15,7 +15,7 @@ export default {
         };
 
         async function GenerateStoreReturnToken(user){
-            let token = Math.random().toString(36).substring(5);
+            let token = Math.random().toString(36).substring(2);
             await env.GlobalStorage.put(`token_${token}`, user)
             return token;
         }
@@ -64,7 +64,7 @@ export default {
 
 
             if(CorrectUser === name) {
-                let OldStories = await env.GlobalStorage.get("stories");
+                let OldStories = await JSON.parse(env.GlobalStorage.get("stories"));
                 OldStories = OldStories ? OldStories : [];
                 OldStories.unshift(text);
 
