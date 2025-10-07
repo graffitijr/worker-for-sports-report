@@ -46,7 +46,7 @@ export default {
 
                 return new Response("login success", {
                     headers: {
-                        "Set-Cookie": `session=${token}; Path=/; HttpOnly; Secure; SameSite=None;`,
+                        "Set-Cookie": `session=${token}; Domain=.fhcsports.site; Path=/; HttpOnly; Secure; SameSite=None`,
                         ...corsHeaders,
                     }
                 });
