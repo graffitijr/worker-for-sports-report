@@ -64,8 +64,9 @@ export default {
 
 
             if(CorrectUser === name) {
-                let OldStories = await JSON.parse(env.GlobalStorage.get("stories"));
-                OldStories = OldStories ? OldStories : [];
+                let raw = await env.GlobalStorage.get("stories");
+                let OldStories = raw ? JSON.parse(raw) : [];
+
                 OldStories.unshift(text);
 
                 await env.GlobalStorage.put("stories", JSON.stringify(OldStories));
