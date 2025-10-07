@@ -46,7 +46,7 @@ export default {
 
                 return new Response("login success", {
                     headers: {
-                        "Set-Cookie": "${token}; HttpOnly; Secure; SameSite=None; Path=/",
+                        "Set-Cookie": "${token}; HttpOnly; Secure; SameSite=None;",
                         ...corsHeaders,
                     }
                 });
@@ -55,10 +55,21 @@ export default {
         }
 
         if (url.pathname === "/post-story" && request.method === "POST") {
-            let text = request.body.json();
+            let [name, text] = request.body.json();
             let token = request.headers.get("Cookie")
 
-            let Correct
+            let CorrectUser = await env.GlobalStorage.get(`token_${token}`)
+
+            if(CorrectUser === name) {
+                let OldStories = await env.GlobalStorage.get("stories");
+                OldStories = OldStories ? OldStories : [];
+                OldStories.unshift(text);
+
+                await env.GlobalStorage.set(OldStories)
+
+                return new Response("successfully added", {status: 200, headers: corsHeaders});
+            }
+            return new Response("invalid login", {status: 404, headers: corsHeaders});
         }
 
 
