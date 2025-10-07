@@ -90,7 +90,7 @@ export default {
 
             if(CorrectUser === name) {
                 for (const story of Stories) {
-                    if (story.name === storyRequest) {
+                    if (story.title === storyRequest) {
                         await env.GlobalStorage.delete(story.name)
                         return new Response("successfully removed", {status: 200, headers: corsHeaders});
                     }
