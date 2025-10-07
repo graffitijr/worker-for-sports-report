@@ -61,14 +61,14 @@ export default {
             const token = match ? match[1] : null;
 
             let CorrectUser = await env.GlobalStorage.get(`token_${token}`)
-            
 
-            if(CorrectUser === name.text()) {
+
+            if(CorrectUser === name) {
                 let OldStories = await env.GlobalStorage.get("stories");
-                OldStories = OldStories ? OldStories.parse() : [];
+                OldStories = OldStories ? OldStories : [];
                 OldStories.unshift(text);
 
-                await env.GlobalStorage.put("stories", OldStories);
+                await env.GlobalStorage.put("stories", JSON.stringify(OldStories));
 
                 return new Response("successfully added", {status: 200, headers: corsHeaders});
             }
