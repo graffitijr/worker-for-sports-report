@@ -85,8 +85,8 @@ export default {
 
             let CorrectUser = await env.GlobalStorage.get(`token_${token}`)
 
-            let Stories = await env.GlobalStorage.get("stories")
-            Stories = JSON.parse(Stories);
+            let Stories = await env.GlobalStorage.get("stories");
+            Stories = JSON.parse(Stories || "[]");
 
             if(CorrectUser === name) {
                 for (const story of Stories) {
