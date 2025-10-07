@@ -61,10 +61,11 @@ export default {
             const token = match ? match[1] : null;
 
             let CorrectUser = await env.GlobalStorage.get(`token_${token}`)
+            
 
-            if(CorrectUser === name) {
+            if(CorrectUser === name.text()) {
                 let OldStories = await env.GlobalStorage.get("stories");
-                OldStories = OldStories ? OldStories : [];
+                OldStories = OldStories ? OldStories.parse() : [];
                 OldStories.unshift(text);
 
                 await env.GlobalStorage.put("stories", OldStories);
