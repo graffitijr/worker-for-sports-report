@@ -27,6 +27,19 @@ export default {
             return new Response(content, {status: 200, headers: corsHeaders});
         }
 
+        const CorrectAccounts = {
+            "noahrich2028":"CanesRaisin41",
+            "gports67":"CanesRaisin41"
+        }
+
+        if (url.pathname === "/login" && request.method === "POST") {
+            [username, password] = request.body.json();
+
+            if (CorrectAccounts.username === password) {
+                //return new Response("login Success", {status: 200, headers: ...corsHeaders, "Set-Cookie: token="});
+            }
+        }
+
 
         // Default response for any other route
         return new Response("Not found", {status: 404, headers: corsHeaders});
