@@ -92,11 +92,13 @@ export default {
 
             if(CorrectUser === name) {
                 for (const story of Stories) {
-                    if (story.title !== storyRequest) {
+                    const title = (typeof story === "string") ? story : (story.title ?? "");
+                    if (title !== storyRequest) {
                         newStories.push(story);
                     }
                 }
-                await env.GlobalStorage.put("stories", newStories)
+
+                await env.GlobalStorage.put("stories", JSON.stringify(newStories))
                 return new Response("attempted to remove", {status: 200, headers: corsHeaders});
             }
             return new Response("Error, no such story", {status: 404, headers: corsHeaders});
