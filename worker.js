@@ -39,7 +39,7 @@ export default {
         }
 
         if (url.pathname === "/login" && request.method === "POST") {
-            [username, password] = await request.json();
+            let [username, password] = await request.json();
 
             if (CorrectAccounts[username] === password) {
                 let token = await GenerateStoreReturnToken(username, password);
