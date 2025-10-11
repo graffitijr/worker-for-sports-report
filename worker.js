@@ -1,4 +1,4 @@
-//Back End template - made my NOAH RICHARDS
+//Back End template with cookies - made my NOAH RICHARDS  ---------------------------CAN ONLY USE ON MOBILE IF WORKER IS ON SUBDOMAIN ex. https://worker.fhcsports.site
 
 export default {
     // This function runs whenever a request hits your worker's URL.
@@ -8,16 +8,59 @@ export default {
 
         // Simple CORS headers so your frontend (Pages or other) can call this worker freely.
         const corsHeaders = {
-            "Access-Control-Allow-Origin": "https://fhcsports.site",
+            "Access-Control-Allow-Origin": "https://fhcsports.site", //set to frontend site, like https://fhcsports.site
             "Access-Control-Allow-Credentials": "true",
             "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
             "Access-Control-Allow-Headers": "Content-Type"
         };
 
-        async function GenerateStoreReturnToken(user){
-            let token = Math.random().toString(36).substring(2);
-            await env.GlobalStorage.put(`token_${token}`, user)
-            return token;
+        //function to help generate tokens
+
+        async function GenerateToken(){
+            return Math.random().toString(36).substring(0, 8); //set length of token
+        }
+
+        //function to store tokens
+
+        async function StoreTokens(token, user){
+            await env.GlobalStorage.put("token_" + token, user)
+        }
+
+        //get user from token
+
+        async function GetUserFromToken(token){
+            let user = await env.GlobalStorage.get("token_" + token);
+            user = user ? user : null;
+            return user;
+        }
+
+        //deletes tokens
+
+        async function DeleteTokenFromToken(token){
+            await env.GlobalContent.delete("token_" + token);
+        }
+
+        async function DeletesTokeFromUser(user){
+            let list = await env.GlobalContent.list();
+            for (const item of list.keys) {
+                if (await env.GlobalContent.get(item.name) === user) {
+                    await env.GlobalContent.delete(item.name);
+                }
+            }
+        }
+
+        //adds helpful query perameter help
+
+        function GetQueryParam(url, keys) {
+            const params = new URL(url).searchParams;
+            const result = {};
+            for (const key of keys) {
+                result[key] = params.get(key);
+            }
+            return result;
+        }
+        function GetURL(){
+            return window.location.href
         }
 
         // Handle browser preflight for POSTs
@@ -25,7 +68,9 @@ export default {
             return new Response(null, {status: 204, headers: corsHeaders});
         }
 
-        //MAIN PART - handles get and post ----------------------------------------------------------------------------------------------------------------
+        //MAIN PART - handles get and post ---------------------------------------------------------------------------------------------------------------- change after this
+        //examples at end of code
+
         if (url.pathname === "/get-content" && request.method === "GET") {
             let content = await env.GlobalStorage.get("stories");
             content = content ? content : [];
@@ -33,79 +78,41 @@ export default {
             return new Response(content, {status: 200, headers: corsHeaders});
         }
 
-        const CorrectAccounts = {
-            "noahrich2028":"CanesRaisin41",
-            "gports67":"CanesRaisin41"
-        }
-
-        if (url.pathname === "/login" && request.method === "POST") {
-            let [username, password] = await request.json();
-
-            if (CorrectAccounts[username] === password) {
-                let token = await GenerateStoreReturnToken(username, password);
-
-                return new Response("login success", {
-                    headers: {
-                        "Set-Cookie": `session=${token}; Domain=.fhcsports.site; Path=/; HttpOnly; Secure; SameSite=None`,
-                        ...corsHeaders,
-                    }
-                });
-            }
-            return new Response("invalid login", {status: 404, headers: corsHeaders});
-        }
-
-        if (url.pathname === "/post-story" && request.method === "POST") {
-            let [name, text] = await request.json();
-            const cookieHeader = request.headers.get("Cookie") || "";
-            const match = cookieHeader.match(/session=([^;]+)/);
-            const token = match ? match[1] : null;
-
-            let CorrectUser = await env.GlobalStorage.get(`token_${token}`)
-
-
-            if(CorrectUser === name) {
-                let raw = await env.GlobalStorage.get("stories");
-                let OldStories = raw ? JSON.parse(raw) : [];
-
-                OldStories.unshift(text);
-
-                await env.GlobalStorage.put("stories", JSON.stringify(OldStories));
-
-                return new Response("successfully added", {status: 200, headers: corsHeaders});
-            }
-            return new Response("not logged in", {status: 404, headers: corsHeaders});
-        }
-
-        if (url.pathname === "/remove-story" && request.method === "POST") {
-            let [name, storyRequest] = await request.json();
-
-            const cookieHeader = request.headers.get("Cookie") || "";
-            const match = cookieHeader.match(/session=([^;]+)/);
-            const token = match ? match[1] : null;
-
-            let CorrectUser = await env.GlobalStorage.get(`token_${token}`)
-
-            let Stories = await env.GlobalStorage.get("stories");
-            Stories = JSON.parse(Stories || "[]");
-
-            let newStories = [];
-
-            if(CorrectUser === name) {
-                for (const story of Stories) {
-                    const title = (typeof story === "string") ? story : (story.title ?? "");
-                    if (title !== storyRequest) {
-                        newStories.push(story);
-                    }
-                }
-
-                await env.GlobalStorage.put("stories", JSON.stringify(newStories))
-                return new Response("attempted to remove", {status: 200, headers: corsHeaders});
-            }
-            return new Response("Error, no such story", {status: 404, headers: corsHeaders});
-        }
-
-
         // Default response for any other route
         return new Response("Not found", {status: 404, headers: corsHeaders});
     }
 };
+
+//----------------------------------------------------------------------------------------------------------------------------------EXAMPLES
+
+/* example get
+
+
+        if (url.pathname === "/get-content" && request.method === "GET") {
+            let content = await env.GlobalStorage.get("stories");
+            content = content ? content : [];
+
+            return new Response(content, {status: 200, headers: corsHeaders});
+        }
+        */
+
+
+/* example post
+
+if (url.pathname === "/login" && request.method === "POST") {
+    let [username, password] = await request.json();
+
+    if (CorrectAccounts[username] === password) {
+        let token = await GenerateStoreReturnToken(username, password);
+
+        return new Response("login success", {
+            headers: {
+                "Set-Cookie": `session=${token}; Domain=.fhcsports.site; Path=/; HttpOnly; Secure; SameSite=None`,                  <-------------   SET COOKIE
+                ...corsHeaders,
+            }
+        });
+    }
+    return new Response("invalid login", {status: 404, headers: corsHeaders});
+}
+
+ */
