@@ -100,7 +100,7 @@ export default {
             return new Response("invalid login", {status: 404, headers: corsHeaders});
         }
         if (url.pathname === "/post" && request.method === "POST") {
-            let RequestedStory = request.json();
+            let RequestedStory = await request.json();
             let SignedIn = GetUserFromToken(request.headers.get("Cookie") || "")
 
             if (SignedIn) {
