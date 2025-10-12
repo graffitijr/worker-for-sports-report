@@ -70,12 +70,32 @@ export default {
 
         //MAIN PART - handles get and post ---------------------------------------------------------------------------------------------------------------- change after this
         //examples at end of code
+        const CorrectAccounts = [{
+            "admin":"passwordadmin1"
+        }]
+
 
         if (url.pathname === "/get-content" && request.method === "GET") {
             let content = await env.GlobalStorage.get("stories");
             content = content ? content : [];
 
             return new Response(content, {status: 200, headers: corsHeaders});
+        }
+        if (url.pathname === "/sign-in" && request.method === "POST") {
+            let [username, password] = await request.json();
+
+            if (CorrectAccounts[username] === password) {
+                let token = await GenerateToken(username, password);
+                await StoreTokens(token, username)
+
+                return new Response("successful sign in", {
+                    headers: {
+                        "Set-Cookie": `session=${token}; Domain=.fhcsports.site; Path=/; HttpOnly; Secure; SameSite=None`,
+                        ...corsHeaders,
+                    }
+                });
+            }
+            return new Response("invalid login", {status: 404, headers: corsHeaders});
         }
 
         // Default response for any other route
