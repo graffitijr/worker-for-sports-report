@@ -99,6 +99,20 @@ export default {
             }
             return new Response("invalid login", {status: 404, headers: corsHeaders});
         }
+        if (url.pathname === "/post" && request.method === "POST") {
+            let RequestedStory = request.json();
+            let SignedIn = GetUserFromToken(request.headers.get("Cookie") || "")
+
+            if (SignedIn) {
+                let CurrentContent = await env.GlobalStorage.get("stories");
+                CurrentContent = CurrentContent ? JSON.parse(CurrentContent) : [];
+                CurrentContent.unshift(RequestedStory);
+
+                await env.GlobalStorage.put("stories", CurrentContent);
+                return new Response("Successfully Posted", {status: 200, headers: corsHeaders});
+            }
+            return new Response("not posted: Not logged in", {status: 404, headers: corsHeaders});
+        }
 
         // Default response for any other route
         return new Response("Not found", {status: 404, headers: corsHeaders});
