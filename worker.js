@@ -70,9 +70,9 @@ export default {
 
         //MAIN PART - handles get and post ---------------------------------------------------------------------------------------------------------------- change after this
         //examples at end of code
-        const CorrectAccounts = [{
+        const CorrectAccounts = {
             "admin":"passwordadmin1"
-        }]
+        }
 
 
         if (url.pathname === "/get-content" && request.method === "GET") {
