@@ -101,9 +101,9 @@ export default {
         }
         if (url.pathname === "/post" && request.method === "POST") {
             let RequestedStory = await request.json();
-            let SignedIn = GetUserFromToken(request.headers.get("Cookie") || "")
+            let SignedIn = GetUserFromToken(request.headers.get("Cookie") || null)
 
-            if (SignedIn) {
+            if (SignedIn !== null) {
                 let CurrentContent = await env.GlobalStorage.get("stories");
                 CurrentContent = CurrentContent ? JSON.parse(CurrentContent) : [];
                 CurrentContent.unshift(RequestedStory);
