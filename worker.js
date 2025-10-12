@@ -71,7 +71,8 @@ export default {
         //MAIN PART - handles get and post ---------------------------------------------------------------------------------------------------------------- change after this
         //examples at end of code
         const CorrectAccounts = {
-            "admin":"passwordadmin1"
+            "admin":"passwordadmin1",
+            "gports67":"CanesRaisin41"
         }
 
 
