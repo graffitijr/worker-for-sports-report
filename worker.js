@@ -37,14 +37,14 @@ export default {
         //deletes tokens
 
         async function DeleteTokenFromToken(token){
-            await env.GlobalContent.delete("token_" + token);
+            await env.GlobalStorage.delete("token_" + token);
         }
 
-        async function DeletesTokeFromUser(user){
-            let list = await env.GlobalContent.list();
+        async function DeleteTokenFromUser(user){
+            let list = await env.GlobalStorage.list();
             for (const item of list.keys) {
-                if (await env.GlobalContent.get(item.name) === user) {
-                    await env.GlobalContent.delete(item.name);
+                if (await env.GlobalStorage.get(item.name) === user) {
+                    await env.GlobalStorage.delete(item.name);
                 }
             }
         }
@@ -83,7 +83,7 @@ export default {
         }
         if (url.pathname === "/sign-in" && request.method === "POST") {
             let [username, password] = await request.json();
-            await DeletesTokeFromUser(username)
+            await DeleteTokenFromUser(username)
 
             if (CorrectAccounts[username] === password) {
                 let token = await GenerateToken(username, password);
