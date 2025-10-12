@@ -83,6 +83,7 @@ export default {
         }
         if (url.pathname === "/sign-in" && request.method === "POST") {
             let [username, password] = await request.json();
+            await DeletesTokeFromUser(username)
 
             if (CorrectAccounts[username] === password) {
                 let token = await GenerateToken(username, password);
